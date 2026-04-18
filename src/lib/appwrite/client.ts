@@ -112,6 +112,30 @@ patchAccountMethod('updateEmail');
 patchAccountMethod('updatePhone');
 patchAccountMethod('updatePassword');
 
+(account as any).get = async () => {
+    if (currentUserCache && currentUserCache.expiresAt > Date.now()) {
+        return currentUserCache.user;
+    }
+    const persistent = readPersistentCurrentUserCache();
+    if (persistent) {
+        currentUserCache = persistent;
+        return persistent.user;
+    }
+    if (currentUserInFlight) return currentUserInFlight;
+
+    currentUserInFlight = withTimeout(originalAccountGet(), CURRENT_USER_REQUEST_TIMEOUT)
+        .then((user) => setCachedCurrentUser(user))
+        .catch(() => {
+            clearCurrentUserCache();
+            return null;
+        })
+        .finally(() => {
+            currentUserInFlight = null;
+        });
+
+    return currentUserInFlight;
+};
+
 import { Query } from "appwrite";
 
 export const APPWRITE_DATABASE_ID = APPWRITE_CONFIG.DATABASES.VAULT;
@@ -214,8 +238,11 @@ export async function getCurrentUser(force = false): Promise<any | null> {
         if (currentUserCache && currentUserCache.expiresAt > Date.now()) {
             return currentUserCache.user;
         }
-        const persistent = getCachedCurrentUser();
-        if (persistent) return persistent;
+        const persistent = readPersistentCurrentUserCache();
+        if (persistent) {
+            currentUserCache = persistent;
+            return persistent.user;
+        }
     }
 
     if (!force && currentUserInFlight) {
