@@ -46,7 +46,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 const AICommandModal = dynamic(() => import('@/components/ai/AICommandModal'), { ssr: false });
 const EcosystemPortal = dynamic(() => import('@/components/common/EcosystemPortal'), { ssr: false });
-const WalletSidebar = dynamic(() => import('@/components/overlays/WalletSidebar').then(mod => mod.WalletSidebar), { ssr: false });
+const WalletSidebar = dynamic(() => import('@/components/overlays/WalletSidebar'), { ssr: false });
 
 function getInitials(user: { name?: string | null; email?: string | null } | null) {
   const text = user?.name?.trim() || user?.email?.split('@')[0] || '';

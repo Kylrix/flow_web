@@ -4,6 +4,7 @@ import React from 'react';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { DataNexusProvider } from '@/context/DataNexusContext';
 import { AuthProvider } from '@/context/auth/AuthContext';
+import { TaskProvider } from '@/context/TaskContext';
 import { SubscriptionProvider } from '@/context/subscription/SubscriptionContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { LayoutProvider } from '@/context/LayoutContext';
@@ -15,11 +16,13 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       <DataNexusProvider>
         <SubscriptionProvider>
           <AuthProvider>
-            <NotificationProvider>
-              <LayoutProvider>
-                <SudoProvider>{children}</SudoProvider>
-              </LayoutProvider>
-            </NotificationProvider>
+            <TaskProvider>
+              <NotificationProvider>
+                <LayoutProvider>
+                  <SudoProvider>{children}</SudoProvider>
+                </LayoutProvider>
+              </NotificationProvider>
+            </TaskProvider>
           </AuthProvider>
         </SubscriptionProvider>
       </DataNexusProvider>
