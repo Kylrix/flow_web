@@ -19,7 +19,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '@/context/auth/AuthContext';
 import { events as eventApi, eventGuests as guestApi } from '@/lib/kylrixflow';
-import { Event } from '@/types/kylrixflow';
+import type { Event } from '@/types/kylrixflow';
 import { format } from 'date-fns';
 import { Query } from 'appwrite';
 import { generateEventPattern } from '@/utils/patternGenerator';
