@@ -28,7 +28,7 @@ import {
   FlagOutlined as UnflaggedIcon
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
-import { FormSubmissions } from '@/generated/appwrite/types';
+import type { FormSubmissions } from '@/generated/appwrite/types';
 import ResponseDetailSidebar from './ResponseDetailSidebar';
 
 const SubmissionViewerTable = ({ submissions, headers, schemaMap, parsePayload, renderValue, onToggleRead, onToggleFlag, onRowClick }: any) => (

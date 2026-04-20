@@ -39,7 +39,7 @@ import {
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { DraftsService, FormDraft } from '@/lib/services/drafts';
-import { Forms } from '@/generated/appwrite/types';
+import type { Forms } from '@/generated/appwrite/types';
 import Link from 'next/link';
 import FormDialog from '@/components/forms/FormDialog';
 import FormSettingsDialog from '@/components/forms/FormSettingsDialog';

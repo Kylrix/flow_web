@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 import { Send as SendIcon, CheckCircleOutline as SuccessIcon } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
-import { Forms } from '@/generated/appwrite/types';
+import type { Forms } from '@/generated/appwrite/types';
 import { useDataNexus } from '@/context/DataNexusContext';
 
 export default function PublicFormPage({ params }: { params: Promise<{ id: string }> }) {

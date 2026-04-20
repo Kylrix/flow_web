@@ -42,7 +42,7 @@ import {
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
 import { DraftsService, FormDraft } from '@/lib/services/drafts';
-import { Forms, FormsStatus } from '@/generated/appwrite/types';
+import type { Forms, FormsStatus } from '@/generated/appwrite/types';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useDataNexus } from '@/context/DataNexusContext';
 

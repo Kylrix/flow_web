@@ -554,3 +554,5 @@ export const WalletSidebar = ({ isOpen, onClose }: WalletSidebarProps) => {
         </Drawer>
     );
 };
+
+export default WalletSidebar;

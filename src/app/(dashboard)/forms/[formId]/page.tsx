@@ -25,7 +25,7 @@ import {
     Insights as InsightsIcon
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
-import { Forms } from '@/generated/appwrite/types';
+import type { Forms } from '@/generated/appwrite/types';
 import Link from 'next/link';
 import FormDialog from '@/components/forms/FormDialog';
 import SubmissionViewer from '@/components/forms/SubmissionViewer';
