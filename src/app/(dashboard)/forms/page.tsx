@@ -38,7 +38,8 @@ import {
     Settings as SettingsIcon
 } from '@mui/icons-material';
 import { FormsService } from '@/lib/services/forms';
-import { DraftsService, FormDraft } from '@/lib/services/drafts';
+import { DraftsService } from '@/lib/services/drafts';
+import type { FormDraft } from '@/lib/services/drafts';
 import type { Forms } from '@/generated/appwrite/types';
 import Link from 'next/link';
 import FormDialog from '@/components/forms/FormDialog';
