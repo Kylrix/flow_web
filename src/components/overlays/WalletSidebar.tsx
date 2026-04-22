@@ -10,8 +10,6 @@ import {
     Button,
     alpha,
     Divider,
-    useMediaQuery,
-    useTheme,
     CircularProgress,
     Paper,
 } from '@mui/material';
@@ -33,6 +31,7 @@ import { ecosystemSecurity } from '@/lib/ecosystem/security';
 import { toast } from 'react-hot-toast';
 import { KeychainService } from '@/lib/appwrite/keychain';
 import { WalletService, type SupportedWalletChain, type WalletSummary } from '@/lib/services/wallets';
+import { useViewportBreakpoint } from '@/context/ViewportContext';
 
 interface WalletSidebarProps {
     isOpen: boolean;
@@ -46,8 +45,7 @@ const shortenAddress = (address: string) => {
 };
 
 export const WalletSidebar = ({ isOpen, onClose }: WalletSidebarProps) => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const isMobile = useViewportBreakpoint('md');
     const { user } = useAuth();
     const { requestSudo } = useSudo();
     const [isUnlocked, setIsUnlocked] = useState(ecosystemSecurity.status.isUnlocked);

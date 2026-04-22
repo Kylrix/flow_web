@@ -24,14 +24,14 @@ import {
   ArrowDownward as DescIcon,
   CheckCircle as CheckIcon,
 } from '@mui/icons-material';
-import { useMediaQuery } from '@mui/material';
 import TaskItem from './TaskItem';
 import { useTask } from '@/context/TaskContext';
+import { useViewportBreakpoint } from '@/context/ViewportContext';
 import type { ViewMode, SortField, TaskStatus } from '@/types';
 
 export default function TaskList() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useViewportBreakpoint('sm');
   const {
     getFilteredTasks,
     viewMode,

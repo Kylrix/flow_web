@@ -22,11 +22,11 @@ import {
   Archive as ArchiveIcon,
   ContentCopy as CopyIcon,
 } from '@mui/icons-material';
-import { useMediaQuery, useTheme } from '@mui/material';
 import { format, isToday, isTomorrow, isPast, isThisWeek } from 'date-fns';
 import type { Task, Priority } from '@/types';
 import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
+import { useViewportBreakpoint } from '@/context/ViewportContext';
 
 interface TaskItemProps {
   task: Task;
@@ -49,8 +49,7 @@ const priorityLabels: Record<Priority, string> = {
 };
 
 export default React.memo(function TaskItem({ task, onClick, compact = false }: TaskItemProps) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useViewportBreakpoint('sm');
   const { completeTask, deleteTask, updateTask, labels, projects, selectTask } = useTask();
   const { openSecondarySidebar } = useLayout();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

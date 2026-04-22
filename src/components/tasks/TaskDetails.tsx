@@ -42,12 +42,11 @@ import { useTask } from '@/context/TaskContext';
 import type { Priority, TaskStatus } from '@/types';
 import { useLayout } from '@/context/LayoutContext';
 import { useAI } from '@/hooks/useAI';
-import { useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { notes as noteApi } from '@/lib/kylrixflow';
 import UserSearch from '@/components/UserSearch';
 import { UsersService } from '@/lib/services/users';
 import type { CollaboratorPermission, TaskCollaborator } from '@/types';
+import { useViewportBreakpoint } from '@/context/ViewportContext';
 
 const priorityColors: Record<Priority, string> = {
   low: '#A1A1AA',
@@ -69,8 +68,7 @@ interface TaskDetailsProps {
 }
 
 export default function TaskDetails({ taskId }: TaskDetailsProps) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useViewportBreakpoint('md');
   const { closeSecondarySidebar } = useLayout();
   const {
     tasks,

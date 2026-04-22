@@ -1,17 +1,18 @@
 'use client';
 
 import React from 'react';
-import { Drawer, Box, IconButton, useTheme, useMediaQuery, alpha } from '@mui/material';
+import { Drawer, Box, IconButton, useTheme, alpha } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { useLayout } from '@/context/LayoutContext';
 import TaskDetails from '../tasks/TaskDetails';
 import EventDetails from '@/components/events/EventDetails';
+import { useViewportBreakpoint } from '@/context/ViewportContext';
 
 const DRAWER_WIDTH = 440;
 
 export default function RightSidebar() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useViewportBreakpoint('md');
   const { secondarySidebar, closeSecondarySidebar } = useLayout();
   const { isOpen, type, itemId, data } = secondarySidebar;
 
@@ -102,4 +103,3 @@ export default function RightSidebar() {
     </Drawer>
   );
 }
-

@@ -14,8 +14,6 @@ import {
     Stack,
     alpha,
     InputAdornment,
-    useMediaQuery,
-    useTheme,
 } from "@mui/material";
 import {
     Lock,
@@ -31,6 +29,7 @@ import { useAuth } from "@/context/auth/AuthContext";
 import toast from "react-hot-toast";
 import { unlockWithPasskey } from "@/lib/passkey";
 import { PasskeySetup } from "./PasskeySetup";
+import { useViewportBreakpoint } from "@/context/ViewportContext";
 
 interface SudoModalProps {
     isOpen: boolean;
@@ -46,8 +45,7 @@ export default function SudoModal({
     intent,
 }: SudoModalProps) {
     const { user } = useAuth();
-    const theme = useTheme();
-    const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+    const isDesktop = !useViewportBreakpoint('md');
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [pin, setPin] = useState("");

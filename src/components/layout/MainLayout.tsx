@@ -3,9 +3,10 @@
 import React, { useMemo } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { Box, useTheme, useMediaQuery } from '@mui/material';
+import { Box } from '@mui/material';
 import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
+import { useViewportBreakpoint } from '@/context/ViewportContext';
 import AppBar from '@/components/layout/AppBar';
 import BottomNav from '@/components/layout/BottomNav';
 import GlobalFAB from '@/components/layout/GlobalFAB';
@@ -22,12 +23,11 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const theme = useTheme();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { sidebarOpen } = useTask();
   const { secondarySidebar } = useLayout();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useViewportBreakpoint('md');
 
   const isEmbedded = useMemo(() => searchParams?.get('is_embedded') === 'true', [searchParams]);
 
@@ -76,10 +76,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           // Adjust width if sidebar is hidden
           maxWidth: '100vw',
           width: '100%',
-          transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
+          transition: 'margin 0.2s ease, width 0.2s ease',
           ...(showSidebar && {
              width: `calc(100% - ${sidebarOpen ? DRAWER_WIDTH : 0}px)`,
              ml: sidebarOpen ? 0 : 0, 

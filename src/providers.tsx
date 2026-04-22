@@ -9,24 +9,27 @@ import { SubscriptionProvider } from '@/context/subscription/SubscriptionContext
 import { NotificationProvider } from '@/context/NotificationContext';
 import { LayoutProvider } from '@/context/LayoutContext';
 import { SudoProvider } from '@/context/SudoContext';
+import { ViewportProvider } from '@/context/ViewportContext';
 
 export function AppProviders({ children, isMobileHint = false }: { children: React.ReactNode; isMobileHint?: boolean }) {
   return (
-    <ThemeProvider isMobileHint={isMobileHint}>
-      <DataNexusProvider>
-        <SubscriptionProvider>
-          <AuthProvider>
-            <TaskProvider>
-              <NotificationProvider>
-                <LayoutProvider>
-                  <SudoProvider>{children}</SudoProvider>
-                </LayoutProvider>
-              </NotificationProvider>
-            </TaskProvider>
-          </AuthProvider>
-        </SubscriptionProvider>
-      </DataNexusProvider>
-    </ThemeProvider>
+    <ViewportProvider isMobileHint={isMobileHint}>
+      <ThemeProvider isMobileHint={isMobileHint}>
+        <DataNexusProvider>
+          <SubscriptionProvider>
+            <AuthProvider>
+              <TaskProvider>
+                <NotificationProvider>
+                  <LayoutProvider>
+                    <SudoProvider>{children}</SudoProvider>
+                  </LayoutProvider>
+                </NotificationProvider>
+              </TaskProvider>
+            </AuthProvider>
+          </SubscriptionProvider>
+        </DataNexusProvider>
+      </ThemeProvider>
+    </ViewportProvider>
   );
 }
 
