@@ -18,7 +18,11 @@ export function ViewportProvider({
   children: ReactNode;
   isMobileHint?: boolean;
 }) {
-  const [width, setWidth] = useState(() => (isMobileHint ? MOBILE_FALLBACK_WIDTH : 1440));
+  const [width, setWidth] = useState(() => {
+    if (isMobileHint) return MOBILE_FALLBACK_WIDTH;
+    if (typeof window !== 'undefined') return window.innerWidth;
+    return 0;
+  });
 
   useEffect(() => {
     const update = () => {
@@ -45,6 +49,7 @@ export function useViewport() {
 
 export function useViewportBreakpoint(breakpoint: 'sm' | 'md' | 'lg' = 'md') {
   const { width } = useViewport();
+  if (width === 0) return true;
   if (breakpoint === 'sm') return width < 600;
   if (breakpoint === 'md') return width < 900;
   return width < 1200;
