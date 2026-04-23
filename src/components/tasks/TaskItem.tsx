@@ -104,7 +104,9 @@ export default React.memo(function TaskItem({ task, onClick, compact = false }: 
       <Box
         onClick={() => {
           selectTask(task.id);
-          openSecondarySidebar('task', task.id);
+          if (!isMobile) {
+            openSecondarySidebar('task', task.id);
+          }
           onClick?.();
         }}
         onMouseEnter={() => setIsHovered(true)}

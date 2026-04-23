@@ -31,6 +31,7 @@ import {
 } from 'date-fns';
 import { useTask } from '@/context/TaskContext';
 import { useLayout } from '@/context/LayoutContext';
+import { useViewportBreakpoint } from '@/context/ViewportContext';
 import type { Task, Priority } from '@/types';
 
 const priorityColors: Record<Priority, string> = {
@@ -208,6 +209,7 @@ export default function CalendarView() {
   const theme = useTheme();
   const { tasks, selectTask, setTaskDialogOpen } = useTask();
   const { openSecondarySidebar } = useLayout();
+  const isMobile = useViewportBreakpoint('md');
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const { days, tasksByDate, monthTasks, completedMonthTasks } = React.useMemo(() => {
@@ -259,8 +261,10 @@ export default function CalendarView() {
 
   const handleTaskClick = React.useCallback((taskId: string) => {
     selectTask(taskId);
-    openSecondarySidebar('task', taskId);
-  }, [selectTask, openSecondarySidebar]);
+    if (!isMobile) {
+      openSecondarySidebar('task', taskId);
+    }
+  }, [isMobile, selectTask, openSecondarySidebar]);
 
   const handleAddTask = React.useCallback((_date: Date) => {
     // In a real implementation, this would pre-fill the date in the task dialog
@@ -402,4 +406,3 @@ export default function CalendarView() {
     </Box>
   );
 }
-

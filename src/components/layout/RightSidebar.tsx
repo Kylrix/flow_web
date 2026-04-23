@@ -16,6 +16,10 @@ export default function RightSidebar() {
   const { secondarySidebar, closeSecondarySidebar } = useLayout();
   const { isOpen, type, itemId, data } = secondarySidebar;
 
+  if (isMobile) {
+    return null;
+  }
+
   const content = React.useMemo(() => {
     if (!type || !itemId) return null;
 
@@ -59,32 +63,7 @@ export default function RightSidebar() {
         }),
       }}
     >
-      {/* Close button for mobile */}
-      {isMobile && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            zIndex: 1,
-          }}
-        >
-          <IconButton
-            onClick={closeSecondarySidebar}
-            sx={{
-              bgcolor: alpha(theme.palette.text.primary, 0.05),
-              '&:hover': {
-                bgcolor: alpha(theme.palette.text.primary, 0.1),
-              },
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Box>
-      )}
-      
-      {/* Spacer for AppBar if persistent */}
-      {!isMobile && <Box sx={{ ...theme.mixins.toolbar }} />}
+       <Box sx={{ ...theme.mixins.toolbar }} />
       
       {/* Content with fade animation */}
       <Box
