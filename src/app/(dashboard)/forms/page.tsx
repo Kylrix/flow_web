@@ -47,6 +47,7 @@ import FormSettingsDialog from '@/components/forms/FormSettingsDialog';
 import { useAuth } from '@/context/auth/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useDataNexus } from '@/context/DataNexusContext';
+import { getCurrentUser, getCurrentUserSnapshot } from '@/lib/appwrite/client';
 
 export default function FormsDashboard() {
     const { user } = useAuth();
@@ -71,15 +72,17 @@ export default function FormsDashboard() {
     }, [forms.length]);
 
     const fetchForms = useCallback(async (showLoading = true) => {
-        if (!user) return;
-        
-        // Only show loading if we don't have forms yet, to prevent blinking
-        const shouldShowLoading = showLoading && formsLengthRef.current === 0;
-        if (shouldShowLoading) setLoading(true);
-        
         try {
-            const response = await fetchOptimized(`f_user_forms_${user.$id}`, () => 
-                FormsService.listUserForms(user.$id)
+            const directUser = user ?? getCurrentUserSnapshot() ?? await getCurrentUser(true);
+            if (!directUser?.$id) return;
+            const userId = directUser.$id;
+
+            // Only show loading if we don't have forms yet, to prevent blinking
+            const shouldShowLoading = showLoading && formsLengthRef.current === 0;
+            if (shouldShowLoading) setLoading(true);
+
+            const response = await fetchOptimized(`f_user_forms_${userId}`, () => 
+                FormsService.listUserForms(userId)
             ); 
             
             // Deduplicate by ID to prevent blinking
