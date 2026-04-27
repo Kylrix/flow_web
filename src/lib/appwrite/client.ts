@@ -22,127 +22,6 @@ export const storage = new Storage(client);
 export const account = new Account(client);
 export const realtime = new Realtime(client);
 export { client };
-
-const CURRENT_USER_CACHE_KEY = 'kylrix_flow_current_user_v2';
-const CURRENT_USER_CACHE_TTL = 5 * 60 * 1000;
-const CURRENT_USER_REQUEST_TIMEOUT = 8000;
-const CURRENT_USER_EVENT = 'kylrix-flow-current-user-changed';
-
-type CachedCurrentUser = {
-    user: any | null;
-    expiresAt: number;
-};
-
-let currentUserCache: CachedCurrentUser | null = null;
-let currentUserInFlight: Promise<any | null> | null = null;
-const originalAccountGet = account.get.bind(account);
-
-const readPersistentCurrentUserCache = (): CachedCurrentUser | null => {
-    if (typeof window === 'undefined') return null;
-    try {
-        const raw = window.localStorage.getItem(CURRENT_USER_CACHE_KEY);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw) as CachedCurrentUser;
-        if (!parsed || typeof parsed.expiresAt !== 'number' || parsed.expiresAt <= Date.now()) {
-            window.localStorage.removeItem(CURRENT_USER_CACHE_KEY);
-            return null;
-        }
-        return parsed;
-    } catch {
-        return null;
-    }
-};
-
-const writePersistentCurrentUserCache = (cache: CachedCurrentUser | null) => {
-    if (typeof window === 'undefined') return;
-    try {
-        if (!cache) {
-            window.localStorage.removeItem(CURRENT_USER_CACHE_KEY);
-            return;
-        }
-        window.localStorage.setItem(CURRENT_USER_CACHE_KEY, JSON.stringify(cache));
-    } catch {
-        // Ignore persistence failures.
-    }
-};
-
-const clearCurrentUserCache = () => {
-    currentUserCache = null;
-    writePersistentCurrentUserCache(null);
-    if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent(CURRENT_USER_EVENT, { detail: null }));
-    }
-};
-
-const getCachedCurrentUser = () => {
-    if (currentUserCache && currentUserCache.expiresAt > Date.now()) return currentUserCache.user;
-    const persistent = readPersistentCurrentUserCache();
-    if (!persistent) return null;
-    currentUserCache = persistent;
-    return persistent.user;
-};
-
-const setCachedCurrentUser = (user: any | null) => {
-    const cache: CachedCurrentUser = { user, expiresAt: Date.now() + CURRENT_USER_CACHE_TTL };
-    currentUserCache = cache;
-    writePersistentCurrentUserCache(cache);
-    if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent(CURRENT_USER_EVENT, { detail: user }));
-    }
-    return user;
-};
-
-const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
-    return Promise.race([
-        promise,
-        new Promise<T>((_, reject) => {
-            setTimeout(() => reject(new Error('Current user request timed out')), timeoutMs);
-        }),
-    ]);
-};
-
-const patchAccountMethod = (methodName: string) => {
-    const original = (account as any)[methodName];
-    if (typeof original !== 'function') return;
-    (account as any)[methodName] = async (...args: any[]) => {
-        const result = await original.apply(account, args);
-        clearCurrentUserCache();
-        return result;
-    };
-};
-
-patchAccountMethod('deleteSession');
-patchAccountMethod('deleteSessions');
-patchAccountMethod('updatePrefs');
-patchAccountMethod('updateName');
-patchAccountMethod('updateEmail');
-patchAccountMethod('updatePhone');
-patchAccountMethod('updatePassword');
-
-(account as any).get = async () => {
-    if (currentUserCache && currentUserCache.expiresAt > Date.now()) {
-        return currentUserCache.user;
-    }
-    const persistent = readPersistentCurrentUserCache();
-    if (persistent) {
-        currentUserCache = persistent;
-        return persistent.user;
-    }
-    if (currentUserInFlight) return currentUserInFlight;
-
-    currentUserInFlight = withTimeout(originalAccountGet(), CURRENT_USER_REQUEST_TIMEOUT)
-        .then((user) => setCachedCurrentUser(user))
-        .catch(() => {
-            clearCurrentUserCache();
-            return null;
-        })
-        .finally(() => {
-            currentUserInFlight = null;
-        });
-
-    return currentUserInFlight;
-};
-
 import { Query } from "appwrite";
 
 export const APPWRITE_DATABASE_ID = APPWRITE_CONFIG.DATABASES.VAULT;
@@ -240,57 +119,23 @@ export function getProfilePicturePreview(fileId: string, width: number = 64, hei
     return getFilePreview("profile_pictures", fileId, width, height);
 }
 
-export async function getCurrentUser(force = false): Promise<any | null> {
-    if (!force) {
-        if (currentUserCache && currentUserCache.expiresAt > Date.now()) {
-            return currentUserCache.user;
-        }
-        const persistent = readPersistentCurrentUserCache();
-        if (persistent) {
-            currentUserCache = persistent;
-            return persistent.user;
-        }
+export async function getCurrentUser(): Promise<any | null> {
+    try {
+        return await account.get();
+    } catch {
+        return null;
     }
-
-    if (!force && currentUserInFlight) {
-        return currentUserInFlight;
-    }
-
-    currentUserInFlight = withTimeout(originalAccountGet(), CURRENT_USER_REQUEST_TIMEOUT)
-        .then((user) => setCachedCurrentUser(user))
-        .catch(() => {
-            clearCurrentUserCache();
-            return null;
-        })
-        .finally(() => {
-            currentUserInFlight = null;
-        });
-
-    return currentUserInFlight;
 }
 
 export function getCurrentUserSnapshot(): any | null {
-    if (currentUserCache && currentUserCache.expiresAt > Date.now()) {
-        return currentUserCache.user;
-    }
-    const persistent = readPersistentCurrentUserCache();
-    if (!persistent) return null;
-    currentUserCache = persistent;
-    return persistent.user;
+    return null;
 }
 
-export function onCurrentUserChanged(listener: (user: any | null) => void) {
-    if (typeof window === 'undefined') return () => {};
-    const handle = (event: Event) => {
-        listener((event as CustomEvent<any | null>).detail ?? null);
-    };
-    window.addEventListener(CURRENT_USER_EVENT, handle);
-    return () => window.removeEventListener(CURRENT_USER_EVENT, handle);
+export function onCurrentUserChanged() {
+    return () => {};
 }
 
-export function invalidateCurrentUserCache() {
-    clearCurrentUserCache();
-}
+export function invalidateCurrentUserCache() {}
 
 // --- USER SESSION ---
 
